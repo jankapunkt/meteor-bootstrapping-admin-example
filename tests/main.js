@@ -1,15 +1,16 @@
-/* global describe it beforeEach afterEach */
+/* global describe it beforeEach */
+import { Meteor } from 'meteor/meteor'
+import { Accounts } from 'meteor/accounts-base'
 import { Random } from 'meteor/random'
 import { expect } from 'chai'
 import { Admins } from '../imports/accounts/Admins'
 
-let bootstrapAdmin = undefined
+let bootstrapAdmin
 const admin = JSON.parse(JSON.stringify(Meteor.settings.admin || {})) // Object fallback for Meteor.isClient
 
 if (Meteor.isServer) {
   describe('bootstrapAdmin', function () {
     const expectRolledBack = () => Meteor.users.find().count() === 0 && Admins.collection().find().count() === 0
-    const expectedError = done => () => done(new Error('expected error to be thrown'))
 
     beforeEach(function () {
       Admins.collection().remove({})
@@ -41,11 +42,11 @@ if (Meteor.isServer) {
     })
     it('should throw an error if the Admin is not the first user', function () {
       Accounts.createUser({ username: Random.id() })
-      expect(() => bootstrapAdmin()).to.throw(`Unexpected users/admin mismatch: There were 1 users and 0 admins.`)
+      expect(() => bootstrapAdmin()).to.throw('Unexpected users/admin mismatch: There were 1 users and 0 admins.')
       expectRolledBack()
     })
     it('should throw an error, if the user (via userId), that is supposed to become Admin does not exist', function () {
-      expect(() => Admins.collection().insert({ userId: Random.id() })).to.throw(`userId is invalid in admins insert`)
+      expect(() => Admins.collection().insert({ userId: Random.id() })).to.throw('userId is invalid in admins insert')
       expectRolledBack()
     })
     it('should create the Admin user without password', function () {
@@ -66,7 +67,7 @@ if (Meteor.isServer) {
         } else {
           console.log = originalLog
           doneCalled = true
-          return done(new Error(`expected mail to be logged`))
+          return done(new Error('expected mail to be logged'))
         }
       }
       bootstrapAdmin()
@@ -83,7 +84,7 @@ if (Meteor.isServer) {
 
 if (Meteor.isClient) {
   describe('bootstrapAdmin', function () {
-    it ('it should not be able to access the procedure on the client', function (done) {
+    it('it should not be able to access the procedure on the client', function (done) {
       import('../server/bootstrapAdmin').catch(e => {
         expect(e.message).to.equal('Cannot find module \'../server/bootstrapAdmin\'')
         done()

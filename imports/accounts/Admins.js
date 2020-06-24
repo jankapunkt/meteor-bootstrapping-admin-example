@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import SimpleSchema from 'simpl-schema'
 
@@ -18,7 +19,7 @@ export const Admins = {
           return 'admin.userDoesNotExist'
         }
       }
-    },
+    }
   }
 }
 

@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { Accounts } from 'meteor/accounts-base'
 import { check, Match } from 'meteor/check'
-import { Random } from 'meteor/random'
 
 import { Admins } from '../imports/accounts/Admins'
 import { Users } from '../imports/accounts/Users'
@@ -133,12 +132,8 @@ function purgeSettings () {
  */
 
 function rollback (userId, adminId) {
-  if (userId) {
-    UsersCollection.remove(userId)
-  }
-  if (adminId) {
-    AdminsCollection.remove(adminId)
-  }
+  if (userId) UsersCollection.remove(userId)
+  if (adminId) AdminsCollection.remove(adminId)
 }
 
 bootstrapAdmin()
