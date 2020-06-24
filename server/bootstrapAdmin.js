@@ -87,23 +87,23 @@ function createAdminAccount () {
     // This gives us the ability to rollback before rethrowing the error.
     adminId = AdminsCollection.insert({ userId })
   } catch (insertError) {
-    rollback({ users: userId, admins: adminId })
+    rollback(userId, adminId)
     throw insertError
   }
 
   // 3. check 'tegrity
-  const userExists = userId && Meteor.users.find({ _id: userId }).count() > 0
+  const userExists = userId && UsersCollection.find({ _id: userId }).count() > 0
   const adminExists = adminId && AdminsCollection.find({ _id: adminId }).count() > 0
 
   if (!userExists || !adminExists) {
-    rollback({ users: userId, admins: adminId })
+    rollback(userId, adminId)
     throw new Error(`Unexpected: failed to create user/admin account. UserId=${userId} AdminId=${adminId}`)
   }
 
   // 4. update profile
   const profileUpdated = UsersCollection.update(userId, { $set: { firstName, lastName } })
   if (!profileUpdated) {
-    rollback({ users: userId, admins: adminId })
+    rollback(userId, adminId)
     throw new Error(`Expected admin user profile to be updated, got ${profileUpdated}`)
   }
 
@@ -128,15 +128,16 @@ function purgeSettings () {
  * If any step of this procedure fails, potentially created documents need to be removed (rollback)
  * and an error must be thrown to prevent further startup.
  * (Error throwing is used at the specific sections)
- * @param users
- * @param admins
- * @return {{users: *, admins: any}}
+ * @param userId
+ * @param adminId
  */
 
-function rollback ({ users, admins }) {
-  return {
-    users: UsersCollection.remove(users),
-    admins: AdminsCollection.remove(admins)
+function rollback (userId, adminId) {
+  if (userId) {
+    UsersCollection.remove(userId)
+  }
+  if (adminId) {
+    AdminsCollection.remove(adminId)
   }
 }
 
