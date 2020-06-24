@@ -1,0 +1,30 @@
+{
+  "name": "admintest",
+  "private": true,
+  "scripts": {
+    "start": "meteor run",
+    "test": "meteor test --once --driver-package meteortesting:mocha",
+    "lint": "standard | snazzy",
+    "test:watch": "TEST_WATCH=1 meteor test --driver-package meteortesting:mocha --settings=settings.json",
+    "visualize": "meteor --production --extra-packages bundle-visualizer"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.8.3",
+    "bcrypt": "^5.0.0",
+    "jquery": "^3.4.1",
+    "meteor-node-stubs": "^1.0.0",
+    "simpl-schema": "^1.7.3"
+  },
+  "meteor": {
+    "mainModule": {
+      "client": "client/main.js",
+      "server": "server/main.js"
+    },
+    "testModule": "tests/main.js"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "snazzy": "^8.0.0",
+    "standard": "^14.3.4"
+  }
+}
